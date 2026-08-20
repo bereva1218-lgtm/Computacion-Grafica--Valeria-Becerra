@@ -3,5 +3,5 @@ function sayHello(params){
 }
 
 onload = function(){
-    sayHello();
+    //sayHello();
 }
