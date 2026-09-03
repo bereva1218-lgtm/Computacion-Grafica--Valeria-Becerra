@@ -10,6 +10,7 @@ const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerH
 const renderer = new THREE.WebGLRenderer(); // Esto es lo que renderiza todo
 renderer.setSize(window.innerWidth, window.innerHeight);
 
+// Configurar el color de fondo
 const backgroundColor = new THREE.Color(0x1D1D96);
 renderer.setClearColor(backgroundColor);
 
@@ -49,7 +50,7 @@ const Planets= [
     },
     {
         name: 'Tierra',
-        geometry: new THREE.SphereGeometry(1,32,32),
+        geometry: new THREE.SphereGeometry(1.1,32,32),
         color: 0x008F39,
         posX:11
     },
@@ -99,7 +100,7 @@ Planets.forEach((planet) => {
 });
 
 
-const AnilloGeometry = new THREE.RingGeometry(5,1.5,32);
+const AnilloGeometry = new THREE.RingGeometry(2.8, 4.2, 32);
 
 const AnilloMaterial = new THREE.MeshBasicMaterial({color: 0x808080,side: THREE.DoubleSide});
 
@@ -115,16 +116,25 @@ scene.add(ring);
 
 //ESTO ES LO DE ORBITS
 const controls = new OrbitControls(camera, renderer.domElement); // vincula la camara y el mouse del render para mver
-camera.position.set(0, -2, 35);
+camera.position.set(0, -20, 35);
 controls.update();
 
 function animate(time) {
     renderer.render(scene, camera); // linea que realmente dibuja el frame actual
     controls.update();
-
-    meshes.forEach( (mesh ) => {
-        const speed = 0.0009;
-        mesh.rotation.x = time * speed;
-        mesh.rotation.y = time * speed;
-    });
 }
+// Handle Responsive Resizing
+function onWindowResize() {
+  // Update camera aspect ratio based on the new container bounds
+  camera.aspect = window.innerWidth / window.innerHeight;
+  
+  // Crucial: Update the projection matrix to apply changes
+  camera.updateProjectionMatrix();
+
+  // Update renderer size and pixel ratio
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+}
+
+// 3. Listen for the resize event
+window.addEventListener('resize', onWindowResize);
