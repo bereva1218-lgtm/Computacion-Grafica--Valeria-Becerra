@@ -90,7 +90,7 @@ const Planets= [
 const meshes = [];
 
 Planets.forEach((planet) => {
-    const material = new THREE.MeshStandardMaterial({ color: planet.color });
+    const material = new THREE.MeshStandardMaterial({ color: planet.color, roughness:0.5 });
     // MeshStandartMaterial es el que mejor reacciona a la luz
     // a cada elemento del shapedata, les pone el color que se le puso
     const mesh = new THREE.Mesh(planet.geometry, material);
@@ -104,15 +104,12 @@ const AnilloGeometry = new THREE.RingGeometry(2.8, 4.2, 32);
 
 const AnilloMaterial = new THREE.MeshBasicMaterial({color: 0x808080,side: THREE.DoubleSide});
 
-const ring = new THREE.Mesh(
-    AnilloGeometry,
-    AnilloMaterial
-);
+const anilloJupiter = new THREE.Mesh(AnilloGeometry, AnilloMaterial);
 
-ring.rotation.x = Math.PI / 2;
-ring.position.x = 29; 
+anilloJupiter.rotation.x = Math.PI / 2;
+anilloJupiter.position.x = 29; 
 
-scene.add(ring);
+scene.add(anilloJupiter);
 
 //ESTO ES LO DE ORBITS
 const controls = new OrbitControls(camera, renderer.domElement); // vincula la camara y el mouse del render para mver
@@ -123,14 +120,11 @@ function animate(time) {
     renderer.render(scene, camera); // linea que realmente dibuja el frame actual
     controls.update();
 }
+
 // Handle Responsive Resizing
 function onWindowResize() {
-  // Update camera aspect ratio based on the new container bounds
   camera.aspect = window.innerWidth / window.innerHeight;
-  
-  // Crucial: Update the projection matrix to apply changes
   camera.updateProjectionMatrix();
-
   // Update renderer size and pixel ratio
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
