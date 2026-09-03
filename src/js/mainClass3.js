@@ -24,7 +24,7 @@ scene.add( ambientLight );
 
 const light = new THREE.DirectionalLight( 0xffffff, 1.2 ); // simula una fuente cercana de luz 
 // la posicin define desde donde viene esa luz, apunta hacia el origen por defecto
-light.position.set( 5, 10, 7 );
+light.position.set( 2, 15, 10 );
 scene.add( light );
 
 // DEFINITION OF PRIMITIVE SHAPES
@@ -106,6 +106,22 @@ function animate(time) {
     });
 // BOTON PARA ACTIVAR Y DESACTIVAR EL WIREFRAM
 }
+// RESPONSIVE
+// 2. Handle Responsive Resizing
+function onWindowResize() {
+  // Update camera aspect ratio based on the new container bounds
+  camera.aspect = window.innerWidth / window.innerHeight;
+  
+  // Crucial: Update the projection matrix to apply changes
+  camera.updateProjectionMatrix();
+
+  // Update renderer size and pixel ratio
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+}
+
+// 3. Listen for the resize event
+window.addEventListener('resize', onWindowResize);
 
 const botom = document.getElementById('wireframe-button'); //hay q crear un boton en el html con el id wireframe-button
 function MallaActiva(){
