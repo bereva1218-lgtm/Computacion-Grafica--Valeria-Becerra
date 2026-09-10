@@ -28,7 +28,7 @@ dirLight.castShadow = true;
 scene.add(dirLight);
 
 const floorGeo = new THREE.PlaneGeometry(40, 40);
-const floorMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.8 });
+const floorMat = new THREE.MeshStandardMaterial({ color: 0xFFFFFF, roughness: 0.8 });
 const floor = new THREE.Mesh(floorGeo, floorMat);
 floor.rotation.x = -Math.PI / 2;
 floor.receiveShadow = true;
@@ -47,7 +47,6 @@ const ejeGeom = new THREE.CylinderGeometry(0.8,0.8,8,16);
 const eje = new THREE.Mesh(ejeGeom, baseRueda);
 eje.rotation.x = Math.PI/2;
 eje.position.y = 12;
-// no alñaid lo de castShadow 
 scene.add(eje);
 
 // Patas 
@@ -57,10 +56,10 @@ for(let i = -1; i <= 1; i+=2){
         const pata = new THREE.Mesh(pataGeo, baseRueda);
         pata.position.set(0,6, i * 4);
         pata.rotation.z = j *(Math.PI/ 8);
-        // no añadi lo de castShadow 
         scene.add(pata);
     }
 }
+
 // Lo que conforma la rueda
 
 const rueda = new THREE.Group();
@@ -84,7 +83,6 @@ aro1.position.z = 2.7;
 aro2.position.z = -2.7;
 rueda.add(aro1, aro2);
 
-
 const numCabinas = 8;
 const cabinas = [];
 // la cabia esa una caja entonces box
@@ -94,23 +92,50 @@ const cabinaTecho = new THREE.ConeGeometry(1.5,1.5,4)
 const cabinaMaterial = new THREE.MeshStandardMaterial({color: 0x0000ff});
 const techoMaterial = new THREE.MeshStandardMaterial({color: 0xFf0000});
 
-const soportesGeo = new THREE.CylinderGeometry(0.1,0.1,radioRueda * 2);
-const crossbarGeo = new THREE.CylinderGeometry(0.12,0,12,3.2);
-const gannchosGeo = new THREE.CylinderGeometry(0.1,0.1,0.25);
+const soportesGeo = new THREE.CylinderGeometry(0.1,0.1,radioRueda);
+const crossbarGeo = new THREE.CylinderGeometry(0.12,0.12,5);
+const ganchosGeo = new THREE.CylinderGeometry(0.12,0.05,1.5);
 
 // cree la forma de los conos por cada cabina
 for (let i= 0; i < numCabinas; i++){
     // como es un circulo la ubicacion en el radio es por PI
     const ubicacionCabina =  (i / numCabinas) * Math.PI * 2;
+    
+    // creo un grupo para agrupar los soportes frontales de cada cabina pegados al cilindro principal
+    const soportesGruposFrontales  = new THREE.Group();
+    const soporteFrontal = new THREE.Mesh(soportesGeo, metal);
+    soporteFrontal.position.y= radioRueda/2;
+    soporteFrontal.position.z= 2.7;
+    soportesGruposFrontales.add(soporteFrontal);
+    soportesGruposFrontales.rotation.z =1.5;
+    soportesGruposFrontales.rotation.z = ubicacionCabina - Math.PI / 2;
 
-    // creo un grupo para agrupar las bases 
-    const soportesGrupos  = new THREE.Group();
+    // creo un grupo para agrupar los soportes traseros de cada cabina pegado al cilindro principal
+    const soportesGruposTraseros  = new THREE.Group();
+    const soporteTrasero = new THREE.Mesh(soportesGeo, metal);
+    soporteTrasero.position.y= radioRueda/2;
+    soporteTrasero.position.z= -2.7;
+    soportesGruposTraseros.add(soporteTrasero);
+    soportesGruposTraseros.rotation.z = 1.5;
+    soportesGruposTraseros.rotation.z = ubicacionCabina + Math.PI / 2;
+    
+    rueda.add(soportesGruposFrontales, soportesGruposTraseros);
+    
+    // ahora los crossbars que conectan los soportes frontales y traseros
+    // ubicarlos primero
+    const px = radioRueda * Math.cos(ubicacionCabina);
+    const py = radioRueda * Math.sin(ubicacionCabina);
 
-    // ahora los cilindros conectados al eje principal de la rueda
-    const radioCilindroGeo = new THREE.CylinderGeometry(0.1,0.1, radioRueda *2)
-    const estructuraRadio = new THREE.Mesh(radioCilindroGeo, metal);
-    rueda.add(estructuraRadio);
-    estructuraRadio.rotation.z = ubicacionCabina;
+    const crossbar = new THREE.Mesh(crossbarGeo, metal);
+    crossbar.position.set(px, py, 0);
+    crossbar.rotation.x = Math.PI/2;
+    rueda.add(crossbar);
+
+    //varillas de las cabinas
+    const varillaDerecha = new THREE.Mesh(ganchosGeo, metal);
+    varillaDerecha.position.set(0,-0.25,1.2);
+    const varillaIzquierda = new THREE.Mesh(ganchosGeo, metal);
+    varillaIzquierda.position.set(0,-0.25,-1.1);
 
     // Cabinas
     const cabinaGroup = new THREE.Group();
@@ -125,19 +150,22 @@ for (let i= 0; i < numCabinas; i++){
     techo.rotation.y = Math.PI / 4;
     techo.castShadow = true;
     
-    cabinaGroup.add(caja, techo);
+    cabinaGroup.add(caja, techo, varillaDerecha, varillaIzquierda);
     rueda.add(cabinaGroup);
     cabinas.push(cabinaGroup);
 
 }
-
 
 // Loop de Animación
 let velocidadGiro = 0.01;
 
 function animate() {
     requestAnimationFrame(animate);
+    rueda.rotation.z += velocidadGiro;
 
+    cabinas.forEach((cabina, index) => {
+        cabina.rotation.z = -rueda.rotation.z; // para que vayan en la direccion contraria del giro 
+    });
     // Aqui colocar el codigo de Rotación de la rueda
     controls.update();
     renderer.render(scene, camera);
