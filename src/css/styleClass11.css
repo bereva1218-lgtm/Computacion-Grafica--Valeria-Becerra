@@ -1,0 +1,9 @@
+#wireframe-button{
+    position: absolute;
+    margin: 2%;
+    background-color: blue;
+    color: white;
+    font-size: 20px;
+    font-family:'Times New Roman', Times, serif;
+    font-weight: 5px;
+}
