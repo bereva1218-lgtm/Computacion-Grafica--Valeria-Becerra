@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { MTLLoader } from 'three/addons/loaders/MTLLoader.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -71,3 +72,16 @@ mtlLoader.load('snoopy.mtl', (mtl) => {
         scene.add(root);
     });
 });
+
+// *******************************************
+//  GLTF LOADER
+{
+  const gltfLoader = new GLTFLoader();
+  const url = './models/gltf/snoopy.gltf';
+  gltfLoader.load(url, (gltf) => {
+    const root = gltf.scene;
+    scene.add(root);
+    // A un lado del modelo OBJ para que no se encimen
+    root.position.set(3.5, 0, 0);
+  }); 
+}
