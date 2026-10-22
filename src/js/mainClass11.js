@@ -16,11 +16,11 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setAnimationLoop(animate);
 document.body.appendChild(renderer.domElement);
 
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambientLight);
 
 const light = new THREE.DirectionalLight(0xffffff, 1.2);
-light.position.set(5, 10, 7);
+light.position.set(50, 10, 10);
 scene.add(light);
 
 const controls = new OrbitControls(camera, renderer.domElement);
@@ -69,6 +69,8 @@ mtlLoader.load('snoopy.mtl', (mtl) => {
     mtl.preload();
     objLoader.setMaterials(mtl);
     objLoader.load('snoopy.obj', (root) => {
+        // Girar 180° para que mire hacia la cámara y las luces
+        root.rotation.y = Math.PI;
         scene.add(root);
     });
 });
@@ -83,5 +85,13 @@ mtlLoader.load('snoopy.mtl', (mtl) => {
     scene.add(root);
     // A un lado del modelo OBJ para que no se encimen
     root.position.set(3.5, 0, 0);
-  }); 
+    // Girar 180° para que mire hacia la cámara y las luces
+    root.rotation.y = Math.PI;
+
+    // Luz frontal que apunta al Snoopy GLTF
+    const gltfLight = new THREE.DirectionalLight(0xffffff, 2);
+    gltfLight.position.set(3.5, 5, 8);
+    gltfLight.target = root;
+    scene.add(gltfLight);
+  });
 }
